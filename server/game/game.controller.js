@@ -40,7 +40,7 @@ function stopGame(req, res) {
   });
 }
 
-function sendPositionsAndFetch(req, res) {
+function sendPositionsAndFetch(req, res, next) {
   const {
     game_id,
     player_id,
@@ -52,11 +52,7 @@ function sendPositionsAndFetch(req, res) {
       if (err) {
         return res.json({ response: 'err' });
       }
-      return res.json({
-        game_id: game._id,
-        predator_id: game.predator_id,
-        player_coordinates: game.playerCoordinates
-      });
+      return Game.findById(game_id).then(savedUser => res.json(savedUser)).catch(e => next(e));
     });
 }
 

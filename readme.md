@@ -9,12 +9,12 @@ yarn --ignore-engines start
 
 <h3>Спецификация</h4>
 
-<h4>POST /api/create-game</h3>
+<h4>GET /api/create-game</h3>
 
 <strong>Отправка настроек игры и получение игрового 
-идентификатора</strong>
+идентификатора и дополнительных данных об игре</strong>
 
-Данные для POST запроса:
+Данные для GET запроса:
 
 ```
 {
@@ -32,11 +32,20 @@ yarn --ignore-engines start
 }
 ```
 
-<h4>POST /api/register-vistim</h3>
+Пример:
+
+```
+GET /api/create-game?disclosure_position_timeout=10&victim_count=1&predator_id=1
+
+Ответ: 
+{"__v":0,"disclosure_position_timeout":10,"victim_count":1,"predator_id":"1","status":"stop","_id":"5b13f4a32b97a50bf79f996a","playerCoordinates":[],"activeVistims":[]}
+```
+
+<h4>GET /api/register-vistim</h3>
 
 <strong>Регистрация жертв</strong>
 
-Данные для POST запроса:
+Данные для GET запроса:
 
 ```
 {
@@ -49,47 +58,29 @@ yarn --ignore-engines start
 
 ```
 {
-  "response": "ok", // todo: or error
+  "response": "ok", // or { "response": "err" }
 }
 ```
 
-<h4>POST /api/start-game</h3>
+Пример:
 
-<strong>Отправка флага старта игры (от интерфейса хищника), если хищник 
-не зарегистрирован - ошибка</strong>
+```
+GET /api/register-vistim?game_id=5b13f4a32b97a50bf79f996a&vistim_id=3
 
-Данные для POST запроса:
+Ответ: 
+{"response":"ok"}
+```
+
+
+<h4>GET /api/start-game</h3>
+
+<strong>Отправка флага старта игры</strong>
+
+Данные для GET запроса:
 
 ```
 {
-  "game_id": 123,
-  "predator_id": 1 // для проверки подлинности
-}
-```
-
-Ответ:
-
-```
-{
-  "game_status": "start"
-}
-```
-
-<h4>POST /api/send-positions-and-fetch</h3>
-
-<strong>Отправка GEO позиций и получение данных игры (всех позиций
-игроков)</strong>
-
-Данные для POST запроса:
-
-```
-{
-  "game_id": 123,
-  "player_id": 2,
-  "current_coordinates": {
-    "longitude": 23.234234,
-    "latitude": 53.234234,
-  }
+  "game_id": "5b13f4a32b97a50bf79f996a",
 }
 ```
 
@@ -97,56 +88,28 @@ yarn --ignore-engines start
 
 ```
 {
-  "game_status": "start", // start|stop
-  "predator_id": 23123, // player_id хищника
-  "player_coordinates": [
-    { 
-      "player_id": 2,
-      "longitude": 23.234234,
-      "latitude": 53.234234
-    },
-    { 
-      "player_id": 1,
-      "longitude": 23.24000,
-      "latitude": 52.234
-    }
-  ]
+  "status": "active" // or {"response":"err"}
 }
 ```
 
-<h4>POST /api/catch-vistim</h3>
+Пример:
 
-<strong>Отправка идентификатора пойманной жертвы (для дальнешего обрубания 
-результатов в `/api/send-positions-and-fetch` (при выполнении данного запроса
-указанный vistim_id - не фигурирует в массиве player_coordinates)</strong>
+```
+GET /api/start-game?game_id=5b13f4a32b97a50bf79f996a
 
-Данные для POST запроса:
+Ответ: 
+{"response":"ok"}
+```
+
+<h4>GET /api/stop-game</h3>
+
+<strong>Отправка флага остановки игры</strong>
+
+Данные для GET запроса:
 
 ```
 {
-  "game_id": 123,
-  "vistim_id": 1
-}
-```
-
-Ответ:
-
-```
-{
-  "response": "ok"
-}
-```
-
-<h4>POST /api/stop-game</h3>
-
-<strong>Отправка флага остановки игры (от интерфейса хищника)</strong>
-
-Данные для POST запроса:
-
-```
-{
-  "game_id": 123,
-  "predator_id": 1 // для проверки подлинности
+  "game_id": "5b13f4a32b97a50bf79f996a",
 }
 ```
 
@@ -157,3 +120,84 @@ yarn --ignore-engines start
   "game_status": "stop"
 }
 ```
+
+<h4>GET /api/send-positions-and-fetch</h3>
+
+<strong>Отправка GEO позиций и получение данных игры (всех позиций
+игроков)</strong>
+
+Данные для GET запроса:
+
+```
+{
+  "game_id": "5b13f4a32b97a50bf79f996a",
+  "player_id": "1",
+  "longitude": "23.234234",
+  "latitude": "53.234234",
+}
+```
+
+Ответ:
+
+```
+{
+  "_id":"5b13f4a32b97a50bf79f996a", // game_id
+  "disclosure_position_timeout":10,
+  "victim_count": 1,
+  "predator_id":"1",
+  "status":"active",
+  "__v":0,
+  "playerCoordinates":[
+    {"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f6e22b97a50bf79f996b"}
+  ]
+}
+```
+
+Пример:
+
+```
+GET /api/send-positions-and-fetch?game_id=5b13f4a32b97a50bf79f996a&player_id=1&longitude=23.234234&latitude=53.234234
+
+Ответ: 
+{"_id":"5b13f4a32b97a50bf79f996a","disclosure_position_timeout":10,
+"victim_count":1,"predator_id":"1","status":"active","__v":0,
+"playerCoordinates":[{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f6e22b97a50bf79f996b"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f6e82b97a50bf79f996c"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f7d4943f440c884b7752"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f803e43f470c902715a7"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f84e39bdef0c9bccc305"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f85239bdef0c9bccc306"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f85439bdef0c9bccc307"},
+{"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f85639bdef0c9bccc308"}],"activeVistims":["3"]}
+```
+
+
+<h4>GET /api/catch-vistim</h3>
+
+<strong>Отправка идентификатора пойманной жертвы. При удалении жертвы переданный 
+идентификатор удаляется из массива activeVistims</strong>
+
+Данные для GET запроса:
+
+```
+{
+  "vistim_id": 1
+}
+```
+
+Ответ:
+
+```
+{
+  "response": "ok" // or {"response":"err"}
+}
+```
+
+
+Пример:
+
+```
+GET /api/catch-vistim?game_id=5b13f4a32b97a50bf79f996a&vistim_id=1
+
+Ответ: 
+{"response":"ok"}

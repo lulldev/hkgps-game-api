@@ -1,10 +1,10 @@
 const express = require('express');
 // const validate = require('express-validation');
 // const paramValidation = require('../../config/param-validation');
-const gameCtrl = require('./game.controller');
+const gameCtrl = require('../game.controller');
 const router = express.Router();
 
 router.route('/')
-  .get(gameCtrl.stopGame);
+  .get(gameCtrl.catchVistim);
 
 module.exports = router;
