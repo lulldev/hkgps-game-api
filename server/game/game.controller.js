@@ -1,10 +1,11 @@
 const Game = require('./game.model');
 
 /**
- * Create new user
- * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
- * @returns {User}
+ * Create new game
+ * @property {string} req.body.disclosure_position_timeout
+ * @property {string} req.body.victim_count
+ * @property {string} req.body.predator_id
+ * @returns {Game}
  */
 function createGame(req, res, next) {
   // console.log(req.query);
@@ -14,70 +15,50 @@ function createGame(req, res, next) {
     predator_id: req.query.predator_id,
     status: 'stop'
   });
-
   game.save().then(savedUser => res.json(savedUser)).catch(e => next(e));
 }
 
 /**
- * Load user and append to req.
+ * todo Register vistim
+ * @returns {Game}
  */
-// function load(req, res, next, id) {
-//   // User.get(id)
-//   //   .then((user) => {
-//   //     req.user = user; // eslint-disable-line no-param-reassign
-//   //     return next();
-//   //   })
-//   //   .catch(e => next(e));
-// }
+function registerVistim(req, res) {
+  const { game_id, vistim_id } = req.query;
+  Game.findByIdAndUpdate(game_id, { $push: { vistims: vistim_id } }, (err, game) => {
+    if (err) {
+      return res.json({ response: 'err' });
+    }
+    return res.json({ response: 'ok' });
+  });
+}
 
 /**
- * Get user
- * @returns {User}
+ * todo Register vistim
+ * @returns {Game}
  */
-// function get(req, res) {
-//   return res.json(req.user);
-// }
+function startGame(req, res) {
+  const { game_id } = req.query;
+  Game.findByIdAndUpdate(game_id, { status: 'active' }, (err, game) => {
+    if (err) {
+      return res.json({ response: 'err' });
+    }
+    return res.json({ status: 'active' });
+  });
+}
 
+function stopGame(req, res) {
+  const { game_id } = req.query;
+  Game.findByIdAndUpdate(game_id, { status: 'stop' }, (err, game) => {
+    if (err) {
+      return res.json({ response: 'err' });
+    }
+    return res.json({ status: 'stop' });
+  });
+}
 
-/**
- * Update existing user
- * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
- * @returns {User}
- */
-// function update(req, res, next) {
-//   const user = req.user;
-//   user.username = req.body.username;
-//   user.mobileNumber = req.body.mobileNumber;
-//
-//   user.save()
-//     .then(savedUser => res.json(savedUser))
-//     .catch(e => next(e));
-// }
-
-/**
- * Get user list.
- * @property {number} req.query.skip - Number of users to be skipped.
- * @property {number} req.query.limit - Limit number of users to be returned.
- * @returns {User[]}
- */
-// function list(req, res, next) {
-//   return { test: 'configure' };
-//   const { limit = 50, skip = 0 } = req.query;
-//   User.list({ limit, skip })
-//     .then(users => res.json(users))
-//     .catch(e => next(e));
-// }
-
-/**
- * Delete user.
- * @returns {User}
- */
-// function remove(req, res, next) {
-//   const user = req.user;
-//   user.remove()
-//     .then(deletedUser => res.json(deletedUser))
-//     .catch(e => next(e));
-// }
-
-module.exports = { createGame };
+module.exports = {
+  createGame,
+  registerVistim,
+  startGame,
+  stopGame
+};

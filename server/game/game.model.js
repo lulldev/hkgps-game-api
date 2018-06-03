@@ -20,6 +20,10 @@ const GameSchema = new mongoose.Schema({
     type: String,
     enum: ['stop', 'active', 'end'],
     defaultValue: 'stop'
+  },
+  vistims: {
+    type: [Number],
+    required: false
   }
 });
 
