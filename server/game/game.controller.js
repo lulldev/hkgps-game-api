@@ -1,14 +1,6 @@
 const Game = require('./game.model');
 
-/**
- * Create new game
- * @property {string} req.body.disclosure_position_timeout
- * @property {string} req.body.victim_count
- * @property {string} req.body.predator_id
- * @returns {Game}
- */
 function createGame(req, res, next) {
-  // console.log(req.query);
   const game = new Game({
     disclosure_position_timeout: req.query.disclosure_position_timeout,
     victim_count: req.query.victim_count,
@@ -18,13 +10,9 @@ function createGame(req, res, next) {
   game.save().then(savedUser => res.json(savedUser)).catch(e => next(e));
 }
 
-/**
- * todo Register vistim
- * @returns {Game}
- */
 function registerVistim(req, res) {
   const { game_id, vistim_id } = req.query;
-  Game.findByIdAndUpdate(game_id, { $push: { vistims: vistim_id } }, (err, game) => {
+  Game.findByIdAndUpdate(game_id, { $push: { activeVistims: vistim_id } }, (err, game) => {
     if (err) {
       return res.json({ response: 'err' });
     }
@@ -32,10 +20,6 @@ function registerVistim(req, res) {
   });
 }
 
-/**
- * todo Register vistim
- * @returns {Game}
- */
 function startGame(req, res) {
   const { game_id } = req.query;
   Game.findByIdAndUpdate(game_id, { status: 'active' }, (err, game) => {
@@ -56,9 +40,41 @@ function stopGame(req, res) {
   });
 }
 
+function sendPositionsAndFetch(req, res) {
+  const {
+    game_id,
+    player_id,
+    longitude,
+    latitude
+  } = req.query;
+  Game.findByIdAndUpdate(game_id,
+    { $push: { playerCoordinates: { player_id, longitude, latitude } } }, (err, game) => {
+      if (err) {
+        return res.json({ response: 'err' });
+      }
+      return res.json({
+        game_id: game._id,
+        predator_id: game.predator_id,
+        player_coordinates: game.playerCoordinates
+      });
+    });
+}
+
+function catchVistim(req, res) {
+  const { game_id, vistim_id } = req.query;
+  Game.findByIdAndUpdate(game_id, { $pull: { activeVistims: vistim_id } }, (err, game) => {
+    if (err || (game && game.activeVistims.indexOf(vistim_id) === -1)) {
+      return res.json({ response: 'err' });
+    }
+    return res.json({ response: 'ok' });
+  });
+}
+
 module.exports = {
   createGame,
   registerVistim,
   startGame,
-  stopGame
+  stopGame,
+  sendPositionsAndFetch,
+  catchVistim
 };

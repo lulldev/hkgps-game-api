@@ -1,7 +1,19 @@
 const mongoose = require('mongoose');
-// const Promise = require('bluebird');
-// const httpStatus = require('http-status');
-// const APIError = require('../helpers/APIError');
+
+const PlayerCoordinateSchema = new mongoose.Schema({
+  player_id: {
+    type: String,
+    required: true
+  },
+  longitude: {
+    type: String,
+    required: true
+  },
+  latitude: {
+    type: String,
+    required: true
+  },
+});
 
 const GameSchema = new mongoose.Schema({
   disclosure_position_timeout: {
@@ -13,7 +25,7 @@ const GameSchema = new mongoose.Schema({
     required: true
   },
   predator_id: {
-    type: Number,
+    type: String,
     required: true
   },
   status: {
@@ -21,8 +33,12 @@ const GameSchema = new mongoose.Schema({
     enum: ['stop', 'active', 'end'],
     defaultValue: 'stop'
   },
-  vistims: {
-    type: [Number],
+  activeVistims: {
+    type: [String],
+    required: false
+  },
+  playerCoordinates: {
+    type: [PlayerCoordinateSchema],
     required: false
   }
 });
