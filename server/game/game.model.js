@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 
+const CoordinateSchema = new mongoose.Schema({
+  longitude: {
+    type: String,
+    required: true
+  },
+  latitude: {
+    type: String,
+    required: true
+  },
+});
+
 const PlayerCoordinateSchema = new mongoose.Schema({
   player_id: {
     type: String,
@@ -40,6 +51,14 @@ const GameSchema = new mongoose.Schema({
   playerCoordinates: {
     type: [PlayerCoordinateSchema],
     required: false
+  },
+  speedLimit: {
+    type: Number,
+    required: true
+  },
+  startPosition: {
+    type: CoordinateSchema,
+    required: true
   }
 });
 

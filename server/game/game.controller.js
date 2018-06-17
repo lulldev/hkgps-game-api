@@ -5,6 +5,8 @@ function createGame(req, res, next) {
     disclosure_position_timeout: req.query.disclosure_position_timeout,
     victim_count: req.query.victim_count,
     predator_id: req.query.predator_id,
+    speedLimit: req.query.speed_limit,
+    startPosition: { longitude: req.query.start_longitude, latitude: req.query.start_latitude },
     status: 'stop'
   });
   game.save().then(savedUser => res.json(savedUser)).catch(e => next(e));
@@ -12,7 +14,7 @@ function createGame(req, res, next) {
 
 function registerVistim(req, res) {
   const { game_id, vistim_id } = req.query;
-  Game.findByIdAndUpdate(game_id, { $push: { activeVistims: vistim_id } }, (err, game) => {
+  Game.findByIdAndUpdate(game_id, { $push: { activeVistims: vistim_id } }, (err) => {
     if (err) {
       return res.json({ response: 'err' });
     }
@@ -22,7 +24,7 @@ function registerVistim(req, res) {
 
 function startGame(req, res) {
   const { game_id } = req.query;
-  Game.findByIdAndUpdate(game_id, { status: 'active' }, (err, game) => {
+  Game.findByIdAndUpdate(game_id, { status: 'active' }, (err) => {
     if (err) {
       return res.json({ response: 'err' });
     }
@@ -32,7 +34,7 @@ function startGame(req, res) {
 
 function stopGame(req, res) {
   const { game_id } = req.query;
-  Game.findByIdAndUpdate(game_id, { status: 'stop' }, (err, game) => {
+  Game.findByIdAndUpdate(game_id, { status: 'stop' }, (err) => {
     if (err) {
       return res.json({ response: 'err' });
     }
@@ -48,7 +50,7 @@ function sendPositionsAndFetch(req, res, next) {
     latitude
   } = req.query;
   Game.findByIdAndUpdate(game_id,
-    { $push: { playerCoordinates: { player_id, longitude, latitude } } }, (err, game) => {
+    { $push: { playerCoordinates: { player_id, longitude, latitude } } }, (err) => {
       if (err) {
         return res.json({ response: 'err' });
       }
