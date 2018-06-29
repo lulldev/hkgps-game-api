@@ -49,13 +49,23 @@ function sendPositionsAndFetch(req, res, next) {
     longitude,
     latitude
   } = req.query;
-  Game.findByIdAndUpdate(game_id,
-    { $push: { playerCoordinates: { player_id, longitude, latitude } } }, (err) => {
-      if (err) {
-        return res.json({ response: 'err' });
-      }
-      return Game.findById(game_id).then(savedUser => res.json(savedUser)).catch(e => next(e));
-    });
+  Game.findByIdAndUpdate(game_id, {
+    $pull: { playerCoordinates: { player_id } }
+  }, (err) => {
+    if (err) {
+      return res.json({ response: 'err' });
+    }
+    Game.findByIdAndUpdate(game_id,
+      {
+        $push: { playerCoordinates: { player_id, longitude, latitude } }
+      }, (err) => {
+        if (err) {
+          return res.json({ response: 'err' });
+        }
+        return Game.findById(game_id).then(savedUser => res.json(savedUser)).catch(e => next(e));
+      });
+    return null;
+  });
 }
 
 function catchVistim(req, res) {
