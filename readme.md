@@ -181,7 +181,39 @@ GET /api/start-game?game_id=5b13f4a32b97a50bf79f996a
 Пример:
 
 ```
-GET /api/send-positions-and-fetch?game_id=5b13f4a32b97a50bf79f996a&player_id=1&longitude=23.234234&latitude=53.234234
+GET /api/send-positions?game_id=5b13f4a32b97a50bf79f996a&player_id=1&longitude=23.234234&latitude=53.234234
+
+Ответ: 
+{
+  "response": "ok" // or {"response":"err"}
+}
+```
+
+<h4>GET /api/get-game</h3>
+
+<strong>Получение данных игры</strong>
+
+Данные для GET запроса:
+
+```
+{
+  "game_id": 1
+}
+```
+
+Ответ:
+
+```
+{
+  "response": "ok" // or {"response":"err"}
+}
+```
+
+
+Пример:
+
+```
+GET /api/game_id?game_id=5b13f4a32b97a50bf79f996a&vistim_id=1
 
 Ответ: 
 {
@@ -203,9 +235,9 @@ GET /api/send-positions-and-fetch?game_id=5b13f4a32b97a50bf79f996a&player_id=1&l
     {"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f85439bdef0c9bccc307"},
     {"latitude":"53.234234","longitude":"23.234234","player_id":"1","_id":"5b13f85639bdef0c9bccc308"}
   ],
-  "activeVistims":["3"]}
+  "activeVistims":["3"]
+}
 ```
-
 
 <h4>GET /api/catch-vistim</h3>
 
