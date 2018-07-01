@@ -42,30 +42,38 @@ function stopGame(req, res) {
   });
 }
 
-function sendPositionsAndFetch(req, res, next) {
+function sendPositions(req, res, next) {
   const {
     game_id,
     player_id,
     longitude,
     latitude
   } = req.query;
-  Game.findByIdAndUpdate(game_id, {
-    $pull: { playerCoordinates: { player_id } }
-  }, (err) => {
-    if (err) {
-      return res.json({ response: 'err' });
-    }
-    Game.findByIdAndUpdate(game_id,
-      {
-        $push: { playerCoordinates: { player_id, longitude, latitude } }
-      }, (err) => {
-        if (err) {
-          return res.json({ response: 'err' });
-        }
-        return Game.findById(game_id).then(savedUser => res.json(savedUser)).catch(e => next(e));
-      });
-    return null;
-  });
+  Game.update({ _id: game_id, 'playerCoordinates.player_id': player_id },
+    { $set: {
+      'playerCoordinates.$.longitude': longitude,
+      'playerCoordinates.$.latitude': latitude, },
+    },
+    (err, result) => {
+      if (err) {
+        return res.json({ response: 'err' });
+      }
+      if (result.nModified === 0) {
+        Game.findByIdAndUpdate(game_id,
+          { $push: { playerCoordinates: { player_id, longitude, latitude } } }, (err) => {
+            if (err) {
+              return res.json({ response: 'err' });
+            }
+          });
+      }
+      return res.json({ response: 'ok' });
+    });
+}
+
+function getGame(req, res, next) {
+  return Game.findById(req.query.game_id)
+    .then(savedUser => res.json(savedUser))
+    .catch(e => next(e));
 }
 
 function catchVistim(req, res) {
@@ -83,6 +91,7 @@ module.exports = {
   registerVistim,
   startGame,
   stopGame,
-  sendPositionsAndFetch,
+  sendPositions,
+  getGame,
   catchVistim
 };

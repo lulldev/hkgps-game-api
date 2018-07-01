@@ -5,6 +5,6 @@ const gameCtrl = require('../game.controller');
 const router = express.Router();
 
 router.route('/')
-  .get(gameCtrl.sendPositionsAndFetch);
+  .get(gameCtrl.sendPositions);
 
 module.exports = router;
