@@ -140,10 +140,9 @@ GET /api/start-game?game_id=5b13f4a32b97a50bf79f996a
 }
 ```
 
-<h4>GET /api/send-positions-and-fetch</h3>
+<h4>GET /api/send-positions</h3>
 
-<strong>Отправка GEO позиций и получение данных игры (всех позиций
-игроков)</strong>
+<strong>Отправка GEO позиций</strong>
 
 Данные для GET запроса:
 
@@ -213,7 +212,7 @@ GET /api/send-positions?game_id=5b13f4a32b97a50bf79f996a&player_id=1&longitude=2
 Пример:
 
 ```
-GET /api/game_id?game_id=5b13f4a32b97a50bf79f996a&vistim_id=1
+GET /api/get-game?game_id=5b13f4a32b97a50bf79f996a&vistim_id=1
 
 Ответ: 
 {
