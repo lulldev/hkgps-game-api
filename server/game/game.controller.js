@@ -74,7 +74,9 @@ function getGame(req, res, next) {
 
 function catchVistim(req, res) {
   const { game_id, vistim_id } = req.query;
-  Game.findByIdAndUpdate(game_id, { $pull: { activeVistims: vistim_id } }, (err, game) => {
+  Game.findByIdAndUpdate(game_id,
+    { $pull: { activeVistims: vistim_id, playerCoordinates: { player_id: vistim_id } }
+  }, (err, game) => {
     if (err || (game && game.activeVistims.indexOf(vistim_id) === -1)) {
       return res.json({ response: 'err' });
     }
